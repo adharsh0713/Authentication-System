@@ -101,11 +101,14 @@ export const logout = async (req, res) => {
     }
 }
 
+//send email verification otp
 export const sendVerifyOtp = async (req, res) => {
     try {
-        const {userId} = req.body;
+        const user = await userModel.findById(req.user.id);
 
-        const user = await userModel.findById(userId);
+        if (!user) {
+            return res.json({ success: false, message: "User not found" });
+        }
 
         if (user.isAccountVerified) {
             return res.json({success: false, message: "Account already verified."})
@@ -113,9 +116,9 @@ export const sendVerifyOtp = async (req, res) => {
 
         const otp = String(Math.floor(100000 + Math.random() * 900000));
         user.verifyOTP = otp;
-        user.verifyOTPExpireAt = Date.now() + 5 * 60;
+        user.verifyOTPExpireAt = Date.now() + 5 * 60 * 1000;
 
-        user.save();
+        await user.save();
 
         const mailOptions = {
             from: process.env.SENDER_EMAIL,
@@ -140,8 +143,10 @@ export const sendVerifyOtp = async (req, res) => {
     }
 }
 
+//verify email using otp
 export const verifyEmail = async (req, res) => {
-    const {userId, otp} = req.body;
+    const userId = req.user.id;
+    const { otp } = req.body;
 
     if (!userId || !otp) {
         return res.json({success: false, message: "Missing Details"});
