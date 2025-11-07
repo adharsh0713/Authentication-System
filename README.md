@@ -39,9 +39,9 @@ This project demonstrates how to build a production-grade authentication backend
 
 ## Author
 
-**Adharsh**  
+**Adharsh Baswaraj**  
 Engineering Student | Aspiring Software Developer  
-[GitHub: https://github.com/adharsh0713](#) • [LinkedIn: https://www.linkedin.com/in/adharsh-baswaraj-3493a9283/](#)
+[https://github.com/adharsh0713](#) • [https://www.linkedin.com/in/adharsh-baswaraj-3493a9283/](#)
 
 ## License
 
