@@ -32,8 +32,17 @@ export const register = async(req, res) => {
         const mailOptions = {
             from: process.env.SENDER_EMAIL,
             to: email,
-            subject: "Welcome, to Security Portal!",
-            text: `Welcome ${name}, your account has been created with e-mail: ${email}`
+            subject: "Welcome to Security Portal!",
+            html: `
+                <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                    <h2>Welcome, ${name}!</h2>
+                    <p>Your account has been successfully created with the email:</p>
+                    <p><b>${email}</b></p>
+                    <p>We're thrilled to have you at <b>Security Portal</b>. Explore, stay protected, and make the most of our features.</p>
+                    <br>
+                    <p>Best regards,<br><b>The Security Portal Team</b></p>
+                </div>
+            `
         }
 
         await transporter.sendMail(mailOptions);
@@ -88,6 +97,80 @@ export const logout = async (req, res) => {
 
         return res.json({success: true, message: "Logged Out"});
     } catch{
+        return res.json({success: false, message: error.message})
+    }
+}
+
+export const sendVerifyOtp = async (req, res) => {
+    try {
+        const {userId} = req.body;
+
+        const user = await userModel.findById(userId);
+
+        if (user.isAccountVerified) {
+            return res.json({success: false, message: "Account already verified."})
+        }
+
+        const otp = String(Math.floor(100000 + Math.random() * 900000));
+        user.verifyOTP = otp;
+        user.verifyOTPExpireAt = Date.now() + 5 * 60;
+
+        user.save();
+
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: user.email,
+            subject: "OTP - Email Verification",
+            html: `
+                <h2>Hello ${user.name},</h2>
+                <p>Your One-Time Password (OTP) for verifying your email <b>${user.email}</b> is:</p>
+                <h1 style="color:#007bff;">${otp}</h1>
+                <p>This code will expire in <b>5 minutes</b>.</p>
+                <br/>
+                <p>– Authentication System</p>
+            `
+        }
+
+        await transporter.sendMail(mailOptions);
+
+        return res.json({success: true, message: `Verification OTP sent on email: ${user.email}`});
+
+    } catch (error) {
+        return res.json({success: false, message: error.message});
+    }
+}
+
+export const verifyEmail = async (req, res) => {
+    const {userId, otp} = req.body;
+
+    if (!userId || !otp) {
+        return res.json({success: false, message: "Missing Details"});
+    }
+
+    try {
+        const user = await userModel.findById(userId);
+
+        if (!user){
+            return res.json({success: false, message: "No user found"});
+        }
+
+        if (user.verifyOTP === '' || user.verifyOTP !== otp){
+            return res.json({success: false, message: "Invalid OTP"})
+        }
+
+        if(user.verifyOTPExpireAt < Date.now()){
+            return res.json({success: false, message: "OTP expired"})
+        }
+
+        user.isAccountVerified = true;
+
+        user.verifyOTP = '';
+        user.verifyOTPExpireAt = 0;
+
+        await user.save();
+
+        return res.json({success: true, message: "E-mail verified successfully"})
+    } catch (error) {
         return res.json({success: false, message: error.message})
     }
 }
