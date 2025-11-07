@@ -21,7 +21,7 @@ This project demonstrates how to build a production-grade authentication backend
 | Database | MongoDB with Mongoose |
 | Authentication | JSON Web Tokens (JWT) |
 | Security | bcryptjs, dotenv, helmet, cors |
-| Testing | Postman / Thunder Client |
+| Testing | Postman  |
 
 ## Security Highlights
 
@@ -41,7 +41,7 @@ This project demonstrates how to build a production-grade authentication backend
 
 **Adharsh Baswaraj**  
 Engineering Student | Aspiring Software Developer  
-[https://github.com/adharsh0713](#) • [https://www.linkedin.com/in/adharsh-baswaraj-3493a9283/](#)
+• [GitHub](https://github.com/adharsh0713) • [LinkedIn](https://www.linkedin.com/in/adharsh-baswaraj-3493a9283/)
 
 ## License
 
