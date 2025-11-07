@@ -230,5 +230,51 @@ export const sendPasswordResetOTP = async (req, res) => {
 
 //reset user password
 export const resetPassword = async (req, res) => {
+    const {email, resetOTP, newPassword} = req.body;
 
+    if(!email || !resetOTP || !newPassword){
+        return res.json({ success: false, message: "Missing details"})
+    }
+
+    try {
+        const normalizedEmail = email.trim().toLowerCase();
+        const user = await userModel.findOne({ email: normalizedEmail });
+
+        if(!user){
+            return res.json({success: false, message: "User not found"})
+        }
+
+        if(!user.resetOTP || user.resetOTP !== resetOTP){
+            return res.json({success: false, message: "Invalid OTP"})
+        }
+
+        if(user.resetOTPExpireAt < Date.now()){
+            return res.json({success: false, message: "Password Reset OTP expired"})
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        user.password = hashedPassword;
+        user.resetOTP = '';
+        user.resetOTPExpireAt = 0;
+        await user.save();
+
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: email,
+            subject: "Password Reset Successfully",
+            html: `
+                <h2>Hello ${user.name},</h2>
+                <p>Your Password for <b>${email}</b> has been reset successfully.</p>
+                <p>– Authentication System</p>
+            `
+        }
+
+        await transporter.sendMail(mailOptions);
+
+        return res.json({ success: true, message: "Password reset successfully"})
+
+    } catch (error) {
+        return res.json({ success: false, message: error.message})
+    }
 }
