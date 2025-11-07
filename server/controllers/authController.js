@@ -117,7 +117,6 @@ export const sendVerifyOtp = async (req, res) => {
         const otp = String(Math.floor(100000 + Math.random() * 900000));
         user.verifyOTP = otp;
         user.verifyOTPExpireAt = Date.now() + 5 * 60 * 1000;
-
         await user.save();
 
         const mailOptions = {
@@ -187,4 +186,49 @@ export const isAuthenticated = async (req, res) => {
     } catch (error) {
         return res.json({ success: false, message: error.message})
     }
+}
+
+//send password reset otp
+export const sendPasswordResetOTP = async (req, res) => {
+    try {
+        const {email} = req.body;
+
+        if (!email) {
+            return res.json({ success: false, message: "E-mail is required"})
+        }
+
+        const user = await userModel.findOne({email});
+        if (!user){
+            return res.json({ success: false, message: "User not found"})
+        }
+
+        const otp = String(Math.floor(100000 + Math.random() * 900000));
+        user.resetOTP = otp;
+        user.resetOTPExpireAt = Date.now() + 5 * 60 * 1000;
+        await user.save();
+
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: email,
+            subject: "OTP- for Password Reset",
+            html: `
+                <h2>Hello ${user.name},</h2>
+                <p>Your One-Time Password (OTP) for resetting your password <b>${email}</b> is:</p>
+                <h1 style="color:#007bff;">${otp}</h1>
+                <p>This code will expire in <b>5 minutes</b>.</p>
+                <br/>
+                <p>– Authentication System</p>
+            `
+        }
+        await transporter.sendMail(mailOptions);
+
+        return res.json({ success: true, message: `OTP to reset password is sent to email ${email}`})
+    } catch (error) {
+        return res.json({ success: false, message: error.message})
+    }
+}
+
+//reset user password
+export const resetPassword = async (req, res) => {
+
 }
