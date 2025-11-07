@@ -1,9 +1,9 @@
-Secure Authentication System
+### Secure Authentication System
 
 A backend authentication project built with Node.js, Express, and MongoDB, implementing secure user registration, login, and JSON Web Token (JWT)-based authentication.
 This project follows modern security practices, including password hashing with bcrypt and environment variable configuration.
 
-Overview
+## Overview
 
 This project demonstrates how to build a production-grade authentication backend from scratch. It supports:
 
@@ -17,7 +17,7 @@ Protected routes using middleware
 
 Environment-based configuration
 
-Tech Stack:
+## Tech Stack:
 Component	        Technology
 Backend Framework	Node.js, Express.js
 Database	        MongoDB with Mongoose
@@ -25,7 +25,7 @@ Authentication	    JSON Web Tokens (JWT)
 Security	        bcryptjs, dotenv, helmet, cors
 Testing	            Postman / Thunder Client
 
-Security Highlights
+## Security Highlights
 
 Passwords are hashed and salted using bcrypt before storage.
 
@@ -49,7 +49,7 @@ Author
 
 Adharsh
 Engineering Student | Aspiring Software Developer
-GitHub • LinkedIn
+• GitHub • LinkedIn
 
 License
 
