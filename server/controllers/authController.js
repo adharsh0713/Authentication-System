@@ -47,7 +47,11 @@ export const register = async(req, res) => {
 
         await transporter.sendMail(mailOptions);
 
-        return res.json({success: true});
+        return res.status(201).json({
+            success: true,
+            message: "Account created successfully",
+            user
+        });
     } catch (error) {
         return res.json({success: false, message: error.message});
     }
@@ -80,7 +84,12 @@ export const login = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000
         })
 
-        return res.json({success: true});
+        return res.status(200).json({
+            success: true,
+            message: "Login successful",
+            token,
+            user
+        });
     } catch (error) {
         return res.json({success: false, message: error.message});
     }
